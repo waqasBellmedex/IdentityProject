@@ -10,7 +10,9 @@ namespace Database
 {
     public interface IRepository<Entity> where Entity : class
     {
-        public DbSet<Entity>  Table { get; }
-        //public IQueryable<Entity> TableNoTracking { get; }
+         DbSet<Entity>  Table { get; }
+         IQueryable<Entity> TableNoTracking { get; }
+        Task<bool> AddAsync(Entity entity);
+        Task<bool> AddRangeAsync(IList<Entity> entity);
     }
 }

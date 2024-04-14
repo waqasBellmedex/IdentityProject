@@ -18,6 +18,23 @@ namespace Database
         protected virtual DbSet<Entity> Entities => _entities ??= _context.Set<Entity>();
 
         public DbSet<Entity> Table => Entities;
+
+
+        public IQueryable<Entity> TableNoTracking => Entities.AsNoTracking();
+
+        public async Task<bool> AddAsync(Entity entity)
+        {
+            await Entities.AddAsync(entity);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> AddRangeAsync(IList<Entity> entity)
+        {
+            await Entities.AddRangeAsync(entity);
+            return await _context.SaveChangesAsync() > 0;
+
+        }
+            
     }
 }
  
