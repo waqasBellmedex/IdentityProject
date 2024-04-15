@@ -34,6 +34,11 @@ namespace Database
             return await _context.SaveChangesAsync() > 0;
 
         }
+        public async Task<bool> UpdateAsync(Entity entity)
+        {
+            _context.Entry(entity).State = EntityState.Modified;
+            return await _context.SaveChangesAsync() > 0;
+        }
             
     }
 }

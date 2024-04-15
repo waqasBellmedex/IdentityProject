@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Metadata;
 using System.Reflection;
 
 namespace Database
@@ -34,6 +35,9 @@ namespace Database
                         SetCreationProperties(entry.Entity, _currentUserService.UserId.ToString());
                         break;
 
+                    case EntityState.Modified:
+                        SetModificationProperties(entry.Entity, _currentUserService.UserId.ToString());
+                        break;
                 }
             }
             return base.SaveChangesAsync(cancellationToken);
@@ -59,6 +63,21 @@ namespace Database
                 baseEntity.CreatedBy = userId;
                 baseEntity.ModifiedBy = userId;
             }
+        }
+
+        private static void SetModificationProperties(object entityAsObj, string userId)
+        {
+            var baseEntity = entityAsObj.As<BaseEntity>();
+            if(!(baseEntity is IModificationAudited))
+            {
+                baseEntity.ModifiedDate = DateTime.Now;
+            }
+            if(userId==null)
+            {
+                baseEntity.ModifiedBy = null;
+                return;
+            }
+            baseEntity.ModifiedBy = userId;
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
