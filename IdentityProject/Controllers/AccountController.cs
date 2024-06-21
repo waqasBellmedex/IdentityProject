@@ -16,7 +16,7 @@ namespace IdentityProject.Controllers
             _logger = logger;
         }
 
-        [HttpPost(nameof(Register))]
+    [HttpPost(nameof(Register))]
     public async Task<ActionResult<Response>> Register([FromBody] RegistrationRequest request)
         {
             _logger.LogInformation($"{nameof(Register)} method running");

@@ -1,5 +1,7 @@
 ﻿using Domain.Common;
+using Domain.Interface;
 using Domain.Model;
+using Domain.Services.Account;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -12,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Database
 {
-    public static class DependencyInjection
+    public static class DependencyInjectionContext
     {
         public static IServiceCollection RunDatabaseProjectServices(this IServiceCollection services, IConfiguration configuration)
         {
@@ -31,12 +33,19 @@ namespace Database
                 options.Password.RequireUppercase = false;
                 options.Password.RequiredLength = 6;
             });
+            services.AddIdentity<ApplicationUser, ApplicationRole>(config =>
+            {
+                config.Password.RequiredLength = 6;
+            }).AddEntityFrameworkStores<MyDbContext>().AddDefaultTokenProviders();
+
             services.ResolveRepositories();
+            services.AddScoped<IAccountService, AccountService>();
             return services;
         }
         public static void ResolveRepositories(this IServiceCollection services)
         {
-           // services.AddScoped<IRepository<ApplicationUser>,Repository
+            services.AddScoped<IRepository<ApplicationUser>, Repository<ApplicationUser>>();
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
         }
 
 

@@ -25,8 +25,9 @@ namespace Domain.Services.Account
         public async Task<Response> Register(RegistrationRequest request)
         {
             var user = _mapper.Map<ApplicationUser>(request);
+            user.UserName = request.FullName;
             user.SecurityStamp = Guid.NewGuid().ToString();
-            var result = _userManager.CreateAsync(user, request.Password);
+            var result = await _userManager.CreateAsync(user, request.Password);
             if (result == null)
             {
                 return new Response { IsSuccess = false, Message = "can not create user" };

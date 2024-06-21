@@ -33,7 +33,8 @@ namespace Domain
         }
         private static void ResolveServices(this IServiceCollection services)
         {
-            services.AddScoped<IAccountService,AccountService>();
+            //services.AddScoped<IAccountService,AccountService>();
+
         }
 
     }
