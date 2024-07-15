@@ -1,5 +1,6 @@
 ﻿using Domain.Common;
 using Domain.Interface;
+using Domain.Model;
 using Domain.Services.Account;
 using Domain.Services.Account.Dto;
 using Microsoft.AspNetCore.Mvc;
@@ -22,6 +23,14 @@ namespace IdentityProject.Controllers
             _logger.LogInformation($"{nameof(Register)} method running");
             var result = await _accountService.Register(request);
             return result;
+        }
+
+
+        [HttpGet (nameof(Get))]
+        public  async  Task<ActionResult<ApplicationUser>> Get(GetUserRequestDto request )
+        {
+            //var result = await _accountService.Get(request);
+            return new  ApplicationUser{ };
         }
     }
 }

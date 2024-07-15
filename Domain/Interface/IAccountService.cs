@@ -11,5 +11,6 @@ namespace Domain.Interface
     public interface IAccountService
     {
         Task<Response> Register(RegistrationRequest request);
+        //Task<Response> Get(GetUserRequestDto request);
     }
 }
