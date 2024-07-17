@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityProject", "IdentityProject\IdentityProject.csproj", "{F218008B-DD2D-46CC-9675-E5E41424D85B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityProject", "IdentityProject\IdentityProject.csproj", "{F218008B-DD2D-46CC-9675-E5E41424D85B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{B9F12B14-F623-4CA0-AF5F-8E4079839DB8}"
 EndProject
@@ -11,9 +11,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentatio
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{51CC836B-C976-4CBF-BF20-5E53133CEBEF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database", "Database\Database.csproj", "{F4870000-2609-4F75-8312-C63B908C5229}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Database", "Database\Database.csproj", "{F4870000-2609-4F75-8312-C63B908C5229}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{84829DB8-E92F-4505-9EC0-1114EF4D7424}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{84829DB8-E92F-4505-9EC0-1114EF4D7424}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailConfiguration", "EmailConfiguration\EmailConfiguration.csproj", "{36A8D64C-8EBE-4EF8-8D4D-323D6BF5726C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{84829DB8-E92F-4505-9EC0-1114EF4D7424}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84829DB8-E92F-4505-9EC0-1114EF4D7424}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{84829DB8-E92F-4505-9EC0-1114EF4D7424}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36A8D64C-8EBE-4EF8-8D4D-323D6BF5726C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36A8D64C-8EBE-4EF8-8D4D-323D6BF5726C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36A8D64C-8EBE-4EF8-8D4D-323D6BF5726C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36A8D64C-8EBE-4EF8-8D4D-323D6BF5726C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -41,6 +47,7 @@ Global
 		{F218008B-DD2D-46CC-9675-E5E41424D85B} = {9DD6BFC8-8E2B-4B55-A770-237E788844E6}
 		{F4870000-2609-4F75-8312-C63B908C5229} = {51CC836B-C976-4CBF-BF20-5E53133CEBEF}
 		{84829DB8-E92F-4505-9EC0-1114EF4D7424} = {B9F12B14-F623-4CA0-AF5F-8E4079839DB8}
+		{36A8D64C-8EBE-4EF8-8D4D-323D6BF5726C} = {51CC836B-C976-4CBF-BF20-5E53133CEBEF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {99DE3566-962A-4E09-891E-73610EE6D21C}

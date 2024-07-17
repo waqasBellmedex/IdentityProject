@@ -14,6 +14,7 @@ namespace Domain.Model
         public ApplicationUser()
         {
         }
+        public bool IsActive { get; set; } = false;
         public string? FullName { get; set; }
         public bool IsDeleted { get; set; } = false;
         public DateTime CreatedDate { get; set; } = DateTime.Now;

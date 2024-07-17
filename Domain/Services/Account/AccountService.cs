@@ -2,6 +2,7 @@
 using Domain.Common;
 using Domain.Interface;
 using Domain.Model;
+using Domain.Options;
 using Domain.Services.Account.Dto;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -17,10 +18,12 @@ namespace Domain.Services.Account
     {
         private readonly IMapper _mapper;
         private readonly UserManager<ApplicationUser> _userManager;
-        public AccountService(IMapper mapper, UserManager<ApplicationUser> userManager)
+        private readonly IEmailSender _emailSender;
+        public AccountService(IMapper mapper, UserManager<ApplicationUser> userManager, IEmailSender emailSender)
         {
           _mapper = mapper;
-            _userManager = userManager;
+          _userManager = userManager;
+          _emailSender = emailSender;
         }
         public async Task<Response> Register(RegistrationRequest request)
         {
@@ -32,6 +35,11 @@ namespace Domain.Services.Account
             {
                 return new Response { IsSuccess = false, Message = "can not create user" };
             }
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+            var confirmationLink = $"https://yourapp.com/confirm?token={Uri.EscapeDataString(token)}&userId={user.Id}";
+
+            await _emailSender.SendCustomerCredentialsEmail(user.Email, confirmationLink);
 
             return new Response { IsSuccess = true, Message = "SaveSucessfully", Errors = null! };
 

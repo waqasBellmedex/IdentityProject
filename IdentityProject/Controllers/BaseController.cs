@@ -1,6 +1,5 @@
 ﻿using Domain.Common;
 using Microsoft.AspNetCore.Mvc;
-using NETCore.MailKit.Core;
 
 namespace IdentityProject.Controllers
 {
