@@ -12,59 +12,65 @@ namespace EmailConfiguration
 {
     public class EmailSender : IEmailSender
     {
-        private readonly SmtpSettings smtpSettings;
+        private readonly SmtpSettings _smtpSettings;
         public EmailSender(IOptions<SmtpSettings> options)
         {
-            smtpSettings = options.Value;
+            _smtpSettings = options.Value;
         }
-        public async Task SendCustomerCredentialsEmail(string toEmail,string confirmationLink)
+        public async Task SendCustomerCredentialsEmail(string toEmail, string confirmationLink)
         {
-            var fromAddress = new MailAddress(smtpSettings.SenderAddress, "Bad Wolf");
-            var toAddress = new MailAddress(toEmail);
-            var smtp = new SmtpClient
-            {
-                Host = smtpSettings.Host,
-                Port = smtpSettings.Port,
-                EnableSsl = smtpSettings.EnableSsl,
-                DeliveryMethod = SmtpDeliveryMethod.Network,
-                UseDefaultCredentials = smtpSettings.UseDefaultCredentials,
-                Credentials = new NetworkCredential(smtpSettings.UserName, smtpSettings.Password)
-            };
-            var message = new MailMessage(fromAddress, toAddress)
+            var emailOptions = new EmailOptions
             {
                 Subject = "Confirm your email",
                 Body = $"Please confirm your account by clicking <a href='{confirmationLink}'>here</a>.",
-                IsBodyHtml = smtpSettings.IsBodyHtml
+                ToEmail = toEmail
             };
 
-            await smtp.SendMailAsync(message);
+            try
+            {
+                await SendMailAsync(emailOptions);
+                Console.WriteLine("Email sent successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error sending email: {ex.Message}");
+            }
         }
+
         private async Task SendMailAsync(EmailOptions emailOptions)
         {
             var mail = new MailMessage
             {
                 Subject = emailOptions.Subject,
                 Body = emailOptions.Body,
-                From = new MailAddress(smtpSettings.SenderAddress),
-                IsBodyHtml = smtpSettings.IsBodyHtml,
-
+                From = new MailAddress(_smtpSettings.SenderAddress),
+                IsBodyHtml = _smtpSettings.IsBodyHtml,
+                BodyEncoding = Encoding.Default
             };
-            foreach (var toEmail in emailOptions.ToEmails)
-            {
-                mail.To.Add(toEmail);
-            }
-            var networkCredential = new NetworkCredential(smtpSettings.UserName, smtpSettings.Password);
+
+            mail.To.Add(emailOptions.ToEmail);
+
+            var networkCredential = new NetworkCredential(_smtpSettings.UserName, _smtpSettings.Password);
 
             var smtpClient = new SmtpClient
             {
-                Host = smtpSettings.Host,
-                Port = smtpSettings.Port,
-                EnableSsl = smtpSettings.EnableSsl,
-                UseDefaultCredentials = smtpSettings.UseDefaultCredentials,
+                Host = _smtpSettings.Host,
+                Port = _smtpSettings.Port,
+                EnableSsl = _smtpSettings.EnableSsl,
+                UseDefaultCredentials = _smtpSettings.UseDefaultCredentials,
                 Credentials = networkCredential
             };
-            mail.BodyEncoding = Encoding.Default;
-            await smtpClient.SendMailAsync(mail);
+
+            try
+            {
+                await smtpClient.SendMailAsync(mail);
+                Console.WriteLine("Email sent.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to send email: {ex.Message}");
+            }
         }
+
     }
 }

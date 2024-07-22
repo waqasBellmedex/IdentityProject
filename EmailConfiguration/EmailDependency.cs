@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 namespace EmailConfiguration
 {
-    public static class DependencyInjection
+    public static class EmailDependency
     {
         public static IServiceCollection ResolveEmailDependency(this IServiceCollection services,IConfiguration configuration)
         {

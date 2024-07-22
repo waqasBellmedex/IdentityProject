@@ -32,5 +32,21 @@ namespace IdentityProject.Controllers
             //var result = await _accountService.Get(request);
             return new  ApplicationUser{ };
         }
+
+        [HttpGet]
+        [Route("confirm")]
+        public async Task<Response> ConfirmEmail(string token, string userId)
+        {
+            var response = await _accountService.ConfirmEmailAsync(token, userId);
+            if (response.IsSuccess)
+            {
+                return new Response { IsSuccess = true, Message = "Verify Sucessfully" };
+            }
+            else
+            {
+               return new Response { IsSuccess = false, Message = "Verification Failed" };
+            }
+        }
+
     }
 }

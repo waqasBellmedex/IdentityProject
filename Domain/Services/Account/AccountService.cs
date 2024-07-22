@@ -35,6 +35,11 @@ namespace Domain.Services.Account
             {
                 return new Response { IsSuccess = false, Message = "can not create user" };
             }
+            if (user == null || string.IsNullOrEmpty(user.Email))
+            {
+                return new Response { IsSuccess = false, Message = "User is null or missing email" };
+            }
+
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
             var confirmationLink = $"https://yourapp.com/confirm?token={Uri.EscapeDataString(token)}&userId={user.Id}";
@@ -44,5 +49,31 @@ namespace Domain.Services.Account
             return new Response { IsSuccess = true, Message = "SaveSucessfully", Errors = null! };
 
         }
-    }
+        public async Task<Response> ConfirmEmailAsync(string token, string userId)
+        {
+            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(userId))
+            {
+                return new Response { IsSuccess = false, Message = "Invalid email confirmation request." };
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return new Response { IsSuccess = false, Message = "User not found." };
+            }
+
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+            if (result.Succeeded)
+            {
+                user.IsActive = true; // Assuming you have an IsActive property
+                await _userManager.UpdateAsync(user);
+                return new Response { IsSuccess = true, Message = "Email confirmed successfully." };
+            }
+            else
+            {
+                return new Response { IsSuccess = false, Message = "Error confirming email." };
+            }
+        }
+  
+}
 }
