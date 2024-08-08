@@ -7,7 +7,10 @@ using Domain.Services.Account.Dto;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -74,6 +77,58 @@ namespace Domain.Services.Account
                 return new Response { IsSuccess = false, Message = "Error confirming email." };
             }
         }
-  
-}
+ 
+        public async Task<Response<AuthenticationResponse>> Login(AuthenticationRequest request)
+        {
+            var user = await _userManager.FindByNameAsync(request.Username);
+            if(user!=null)
+            {
+                await ValidateUser(request, user);
+            }
+            return null;
+        }
+
+
+        private async Task ValidateUser(AuthenticationRequest request,ApplicationUser? user)
+        {
+            if(user==null)
+             throw new ValidationException($"No user is registered with {request.Username}.");
+
+             var result = await _userManager.CheckPasswordAsync(user, request.Password);
+            if(!result)
+                throw new ValidationException($"Invalid Credentials for {request.Username}.");
+        }
+
+        private async Task<Response<AuthenticationResponse>> GenerateUserToken(ApplicationUser user)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_jwtSettings.Secret);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[]
+               {
+                        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                        new Claim(JwtRegisteredClaimNames.Name, user.UserName),
+                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                    }),
+                Expires = DateTime.Now.AddYears(5),
+                SigningCredentials =
+                   new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return new Response<AuthenticationResponse>
+            {
+                IsSuccess = true,
+                Message = "User Authenticated successfully",
+                Result = new AuthenticationResponse
+                {
+                    Username = user.UserName,
+                    Token = tokenHandler.WriteToken(token)
+                }
+            };
+        }
+
+
+    }
 }

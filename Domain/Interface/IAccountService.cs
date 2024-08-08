@@ -13,6 +13,7 @@ namespace Domain.Interface
     {
         Task<Response> Register(RegistrationRequest request);
         Task<Response> ConfirmEmailAsync(string token, string userId);
+        Task<Responst<AuthenticationResponse>> Login(AuthenticationRequest request);
         //Task<Response> Get(GetUserRequestDto request);
     }
 }

@@ -48,5 +48,11 @@ namespace IdentityProject.Controllers
             }
         }
 
+        [HttpPost(nameof(Login))]
+        public async Task<ActionResult<Response<AuthenticationResponse>>> Login(AuthenticationRequest request)
+        {
+            var result = await _accountService.Login(request);
+        }
+
     }
 }
