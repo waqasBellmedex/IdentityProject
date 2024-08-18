@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Domain.Entities;
 using Domain.Interface;
 using Domain.Model;
 using Domain.Services.Account;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +26,19 @@ namespace Database
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
                    b => b.MigrationsAssembly(typeof(MyDbContext).Assembly.FullName));
             });
+            var appSettingsSection = configuration.GetSection(nameof(JwtSettings));
+            services.Configure<JwtSettings>(appSettingsSection);
+            var jwtSettings = appSettingsSection.Get<JwtSettings>();
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret)),
+                ValidateIssuerSigningKey = true,
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                RequireExpirationTime = false,
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero
+            };
 
             services.Configure<IdentityOptions>(options =>
             {

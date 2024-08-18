@@ -14,6 +14,8 @@ namespace Domain.Mappings
         public UserMappingProfile()
         {
             CreateMap<ApplicationUser, RegistrationRequest>().ReverseMap();
+            CreateMap<ApplicationUser, AuthenticationResponse>();
+
         }
     }
 }

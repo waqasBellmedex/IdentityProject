@@ -1,18 +1,17 @@
 ﻿using AutoMapper;
 using Domain.Common;
+using Domain.Entities;
 using Domain.Interface;
 using Domain.Model;
-using Domain.Options;
 using Domain.Services.Account.Dto;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Domain.Services.Account
 {
@@ -22,8 +21,11 @@ namespace Domain.Services.Account
         private readonly IMapper _mapper;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailSender _emailSender;
-        public AccountService(IMapper mapper, UserManager<ApplicationUser> userManager, IEmailSender emailSender)
+        private readonly JwtSettings _jwtSettings;
+
+        public AccountService(IOptions<JwtSettings> jwtSettings,IMapper mapper, UserManager<ApplicationUser> userManager, IEmailSender emailSender)
         {
+          _jwtSettings = jwtSettings.Value;
           _mapper = mapper;
           _userManager = userManager;
           _emailSender = emailSender;
@@ -81,25 +83,27 @@ namespace Domain.Services.Account
         public async Task<Response<AuthenticationResponse>> Login(AuthenticationRequest request)
         {
             var user = await _userManager.FindByNameAsync(request.Username);
-            if(user!=null)
-            {
-                await ValidateUser(request, user);
-            }
-            return null;
+            await ValidateUser(request, user);
+            var userResponse = GenerateUserToken(user!);
+            MapUser(user, userResponse);
+
+            //if (user != null)
+            //{
+            //    var userRoles = await _userManager.GetRolesAsync(user);
+            //    userResponse.Result.Roles = userRoles.ToList();
+            //}
+            return userResponse;
         }
 
-
-        private async Task ValidateUser(AuthenticationRequest request,ApplicationUser? user)
+        private void MapUser(ApplicationUser user, Response<AuthenticationResponse> userResponse)
         {
-            if(user==null)
-             throw new ValidationException($"No user is registered with {request.Username}.");
-
-             var result = await _userManager.CheckPasswordAsync(user, request.Password);
-            if(!result)
-                throw new ValidationException($"Invalid Credentials for {request.Username}.");
+            var map = _mapper.Map<AuthenticationResponse>(user);
+            var token = userResponse.Result.Token;
+            userResponse.Result = map;
+            userResponse.Result.Token = token;
         }
 
-        private async Task<Response<AuthenticationResponse>> GenerateUserToken(ApplicationUser user)
+        public Response<AuthenticationResponse> GenerateUserToken(ApplicationUser user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_jwtSettings.Secret);
@@ -129,6 +133,16 @@ namespace Domain.Services.Account
             };
         }
 
+        private async Task ValidateUser(AuthenticationRequest request,ApplicationUser? user)
+        {
+            if(user==null)
+             throw new ValidationException($"No user is registered with {request.Username}.");
 
+             var result = await _userManager.CheckPasswordAsync(user, request.Password);
+            if(!result)
+                throw new ValidationException($"Invalid Credentials for {request.Username}.");
+        }
+
+    
     }
 }
