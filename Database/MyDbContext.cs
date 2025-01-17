@@ -21,7 +21,7 @@ namespace Database
             _currentUserService = currentUserService;
         }
 
-
+        public virtual DbSet<Patient> Patient { get; set;}
 
 
         ///Write SaveChangesAsync Override function;

@@ -4,16 +4,15 @@ using Domain.Model;
 using EmailConfiguration;
 using FluentAssertions.Common;
 using IdentityProject.Extensions;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+
 
 builder.Services.AddControllers();
-//builder.Services.AddSwaggerGen();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddSwaggerGen();
 builder.Services.AddSwaggerExtention();
 builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
 DependencyInjection.AddApplication(builder.Services, builder.Configuration);
@@ -21,6 +20,14 @@ DependencyInjectionContext.RunDatabaseProjectServices(builder.Services, builder.
 EmailDependency.ResolveEmailDependency(builder.Services, builder.Configuration);
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<MyDbContext>();
+    if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Production")
+    {
+        dbContext.Database.Migrate();
+    }
+}
 // Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
 //{

@@ -20,12 +20,13 @@ namespace Database
     {
         public static IServiceCollection RunDatabaseProjectServices(this IServiceCollection services, IConfiguration configuration)
         {
-
+            
             services.AddDbContext<MyDbContext>(options =>
             {
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
                    b => b.MigrationsAssembly(typeof(MyDbContext).Assembly.FullName));
             });
+         
             var appSettingsSection = configuration.GetSection(nameof(JwtSettings));
             services.Configure<JwtSettings>(appSettingsSection);
             var jwtSettings = appSettingsSection.Get<JwtSettings>();
