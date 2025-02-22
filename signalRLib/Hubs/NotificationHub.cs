@@ -17,6 +17,24 @@ namespace signalRLib.Hubs
             _currentUserService = currentUserService;
         }
 
+        public override  Task OnConnectedAsync()
+        {
+            Groups.AddToGroupAsync(Context.ConnectionId, _currentUserService.UserId.ToString());
 
+            if (!UserInfo.Connections.ContainsKey(Context.ConnectionId)) 
+            {
+                UserInfo.Connections.TryAdd(Context.ConnectionId, _currentUserService.UserId.ToString());
+            }
+            else
+            {
+                UserInfo.Connections[_currentUserService.UserId.ToString()] = Context.ConnectionId;
+            }
+            return base.OnConnectedAsync();
+        }
+
+        public override Task OnDisconnectedAsync(Exception? exception)
+        {
+            return base.OnDisconnectedAsync(exception);
+        }
     }
 }
