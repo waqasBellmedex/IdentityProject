@@ -83,6 +83,17 @@ namespace Database
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+           
+            builder.Entity<ApplicationUser>()
+                            .HasMany(u => u.UserRoles)
+                            .WithOne(ur => ur.User)
+                            .HasForeignKey(ur => ur.UserId)
+                            .IsRequired();
+            builder.Entity<ApplicationRole>()
+                .HasMany(u=> u.UserRoles)
+                .WithOne(ur=> ur.Role)
+                .HasForeignKey(ur => ur.RoleId)
+                .IsRequired();
 
 
             base.OnModelCreating(builder);

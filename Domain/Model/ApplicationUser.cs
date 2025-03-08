@@ -23,5 +23,6 @@ namespace Domain.Model
         public DateTime? ModifiedDate { get; set; }
         [StringLength(450)]
         public string? ModifiedBy { get; set; }
+        public virtual ICollection<ApplicationUserRole> UserRoles { get; set; }
     }
 }

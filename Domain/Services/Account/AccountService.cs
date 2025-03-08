@@ -5,6 +5,7 @@ using Domain.Interface;
 using Domain.Model;
 using Domain.Services.Account.Dto;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.ComponentModel.DataAnnotations;
@@ -84,7 +85,7 @@ namespace Domain.Services.Account
         {
             var user = await _userManager.FindByNameAsync(request.Username);
             await ValidateUser(request, user);
-            var userResponse = GenerateUserToken(user!);
+            var userResponse = await GenerateUserToken(user!);
             MapUser(user, userResponse);
 
             //if (user != null)
@@ -103,8 +104,12 @@ namespace Domain.Services.Account
             userResponse.Result.Token = token;
         }
 
-        public Response<AuthenticationResponse> GenerateUserToken(ApplicationUser user)
+        public async  Task<Response<AuthenticationResponse>> GenerateUserToken(ApplicationUser user)
         {
+            var userRoles =  await _userManager.GetRolesAsync(user);
+
+            var apiVersion = GetApiVersionForRoles(userRoles);
+
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_jwtSettings.Secret);
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -113,11 +118,11 @@ namespace Domain.Services.Account
                {
                         new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                         new Claim(JwtRegisteredClaimNames.Name, user.UserName),
-                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                        new Claim("ApiVersion",apiVersion)
                     }),
                 Expires = DateTime.Now.AddYears(5),
-                SigningCredentials =
-                   new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -133,6 +138,12 @@ namespace Domain.Services.Account
             };
         }
 
+        private string GetApiVersionForRoles(IList<string> roles)
+        {
+            if (roles.Contains("Admin")) return "2.0";
+            if (roles.Contains("User")) return "1.0";
+            return "1.0";
+        }
         private async Task ValidateUser(AuthenticationRequest request,ApplicationUser? user)
         {
             if(user==null)
