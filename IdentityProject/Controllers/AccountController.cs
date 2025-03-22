@@ -21,7 +21,13 @@ namespace IdentityProject.Controllers
     public async Task<ActionResult<Response>> Register([FromBody] RegistrationRequest request)
         {
             Logger.LogInformation($"{nameof(Register)} method running");
+           
             var result = await _accountService.Register(request);
+            SignalrService?.SendReload(new SignalRRequestData<object>
+            {
+                UserId = CurrentUserService.UserId.ToString(),
+
+            });
             return result;
         }
 

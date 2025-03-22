@@ -88,11 +88,11 @@ namespace Domain.Services.Account
             var userResponse = await GenerateUserToken(user!);
             MapUser(user, userResponse);
 
-            //if (user != null)
-            //{
-            //    var userRoles = await _userManager.GetRolesAsync(user);
-            //    userResponse.Result.Roles = userRoles.ToList();
-            //}
+            if (user != null)
+            {
+                var userRoles = await _userManager.GetRolesAsync(user);
+                userResponse.Result.Roles = userRoles.ToList();
+            }
             return userResponse;
         }
 
