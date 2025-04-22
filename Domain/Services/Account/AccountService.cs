@@ -153,7 +153,14 @@ namespace Domain.Services.Account
             if(!result)
                 throw new ValidationException($"Invalid Credentials for {request.Username}.");
         }
+        public async Task<ApplicationUser> Get(long Id)
+        {
+            var user = await _userManager.FindByIdAsync(Id.ToString());
+           
+            return user;
+        }
 
-    
+
+
     }
 }

@@ -5,6 +5,7 @@ using EmailConfiguration;
 using FluentAssertions.Common;
 using IdentityProject.Extensions;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,7 @@ builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpS
 DependencyInjection.AddApplication(builder.Services, builder.Configuration);
 DependencyInjectionContext.RunDatabaseProjectServices(builder.Services, builder.Configuration);
 EmailDependency.ResolveEmailDependency(builder.Services, builder.Configuration);
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())

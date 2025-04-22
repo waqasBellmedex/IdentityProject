@@ -3,6 +3,7 @@ using Domain.Interface;
 using Domain.Model;
 using Domain.Services.Account;
 using Domain.Services.Account.Dto;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityProject.Controllers
@@ -10,10 +11,12 @@ namespace IdentityProject.Controllers
     public class AccountController : BaseController<AccountController>
     {
         private readonly IAccountService _accountService;
+        private readonly IMediator _mediator;
         //private readonly ILogger<AccountService> _logger;
-        public AccountController(IAccountService accountService)
+        public AccountController(IAccountService accountService, IMediator mediator)
         {
             _accountService = accountService;
+            _mediator = mediator;
           
         }
 
@@ -32,11 +35,13 @@ namespace IdentityProject.Controllers
         }
 
 
-        [HttpGet (nameof(Get))]
-        public  async  Task<ActionResult<ApplicationUser>> Get(GetUserRequestDto request )
+        [HttpGet]
+        public  async  Task<ApplicationUser> Get(long id)
         {
+            var result = _mediator.Send(id);
+            return null;
             //var result = await _accountService.Get(request);
-            return new  ApplicationUser{ };
+            //return new  ApplicationUser{ };
         }
 
         [HttpGet]
