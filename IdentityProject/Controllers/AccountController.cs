@@ -1,4 +1,5 @@
-﻿using Domain.Common;
+﻿using BackgroundTasks.Interface;
+using Domain.Common;
 using Domain.Interface;
 using Domain.Model;
 using Domain.Services.Account;
@@ -13,11 +14,13 @@ namespace IdentityProject.Controllers
         private readonly IAccountService _accountService;
         private readonly IMediator _mediator;
         //private readonly ILogger<AccountService> _logger;
-        public AccountController(IAccountService accountService, IMediator mediator)
+        private readonly IJobQueue<EmailRequest> _emailQueue;
+        public AccountController(IAccountService accountService, IMediator mediator, IJobQueue<EmailRequest> emailQueue)
         {
             _accountService = accountService;
             _mediator = mediator;
-          
+            _emailQueue = emailQueue;
+
         }
 
     [HttpPost(nameof(Register))]
@@ -64,6 +67,12 @@ namespace IdentityProject.Controllers
         {
             var result = await _accountService.Login(request);
             return result;
+        }
+        [HttpPost("email")]
+        public IActionResult EnqueueEmail([FromBody] EmailRequest job)
+        {
+            _emailQueue.Enqueue(job);
+            return Ok("Email job queued.");
         }
 
     }

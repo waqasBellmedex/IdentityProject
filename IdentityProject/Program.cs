@@ -1,3 +1,4 @@
+using BackgroundTasks;
 using Database;
 using Domain;
 using Domain.Model;
@@ -19,6 +20,7 @@ builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpS
 DependencyInjection.AddApplication(builder.Services, builder.Configuration);
 DependencyInjectionContext.RunDatabaseProjectServices(builder.Services, builder.Configuration);
 EmailDependency.ResolveEmailDependency(builder.Services, builder.Configuration);
+BackgroundTaskDependency.RunBackGroundTaskServices(builder.Services,builder.Configuration);
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 var app = builder.Build();
 
