@@ -10,7 +10,10 @@ using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
+var domainTypes = new[]
+{
+    typeof(ApplicationUser)
+};
 
 builder.Services.AddControllers();
 
@@ -21,7 +24,9 @@ DependencyInjection.AddApplication(builder.Services, builder.Configuration);
 DependencyInjectionContext.RunDatabaseProjectServices(builder.Services, builder.Configuration);
 EmailDependency.ResolveEmailDependency(builder.Services, builder.Configuration);
 BackgroundTaskDependency.RunBackGroundTaskServices(builder.Services,builder.Configuration);
+DependencyInjectionContext.AddGenericRepositories(builder.Services, domainTypes);
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())

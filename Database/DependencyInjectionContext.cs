@@ -3,21 +3,22 @@ using Domain.Entities;
 using Domain.Interface;
 using Domain.Model;
 using Domain.Services.Account;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Database
 {
+
     public static class DependencyInjectionContext
     {
+
         public static IServiceCollection RunDatabaseProjectServices(this IServiceCollection services, IConfiguration configuration)
         {
             
@@ -58,9 +59,27 @@ namespace Database
             services.AddScoped<IAccountService, AccountService>();
             return services;
         }
+   
+        public static IServiceCollection AddGenericRepositories(this IServiceCollection services, Type[] domainTypes)
+        {
+            var genericRepoInterface = typeof(IRepository<>);
+            var genericRepoImplementation = typeof(Repository<>);
+
+            foreach (var domainType in domainTypes)
+            {
+                var interfaceType = domainType.GetInterfaces().FirstOrDefault();
+                if (interfaceType == null)
+                    continue;
+
+                var repoInterface = genericRepoInterface.MakeGenericType(domainType);
+                var repoImplementation = genericRepoImplementation.MakeGenericType(domainType);
+                services.AddScoped(repoInterface, repoImplementation);
+            }
+            return services;
+        }
         public static void ResolveRepositories(this IServiceCollection services)
         {
-            services.AddScoped<IRepository<ApplicationUser>, Repository<ApplicationUser>>();
+            //services.AddScoped<IRepository<ApplicationUser>, Repository<ApplicationUser>>();
             services.AddScoped<ICurrentUserService, CurrentUserService>();
         }
 
