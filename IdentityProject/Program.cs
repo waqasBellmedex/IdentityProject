@@ -4,6 +4,7 @@ using Domain;
 using Domain.Model;
 using EmailConfiguration;
 using FluentAssertions.Common;
+using IdentityProject;
 using IdentityProject.Extensions;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
@@ -25,6 +26,7 @@ DependencyInjectionContext.RunDatabaseProjectServices(builder.Services, builder.
 EmailDependency.ResolveEmailDependency(builder.Services, builder.Configuration);
 BackgroundTaskDependency.RunBackGroundTaskServices(builder.Services,builder.Configuration);
 DependencyInjectionContext.AddGenericRepositories(builder.Services, domainTypes);
+
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 
 var app = builder.Build();
@@ -46,7 +48,7 @@ using (var scope = app.Services.CreateScope())
 app.UseSwaggerExtension(builder.Configuration);
 
 app.UseHttpsRedirection();
-
+app.UseCustomMiddlewears();
 app.UseAuthorization();
 app.UseCors(options => options
                       .AllowAnyHeader()
