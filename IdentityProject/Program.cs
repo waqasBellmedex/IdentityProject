@@ -6,6 +6,8 @@ using EmailConfiguration;
 using FluentAssertions.Common;
 using IdentityProject;
 using IdentityProject.Extensions;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
@@ -28,6 +30,20 @@ BackgroundTaskDependency.RunBackGroundTaskServices(builder.Services,builder.Conf
 DependencyInjectionContext.AddGenericRepositories(builder.Services, domainTypes);
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+})
+.AddCookie()
+.AddGoogle(options =>
+{
+    options.ClientId = builder.Configuration["GoogleAuth:ClientId"];
+    options.ClientSecret = builder.Configuration["GoogleAuth:ClientSecret"];
+});
+
 
 var app = builder.Build();
 
